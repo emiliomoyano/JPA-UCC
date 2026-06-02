@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¿Filosofía, Teología o las dos? · FFyH UCC</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: radial-gradient(ellipse at 20% 50%, #16213e 0%, #0f3460 40%, #1a1a2e 100%);
+      padding: 1.5rem;
+      color: #f0ead6;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(200,169,110,0.3);
+      border-radius: 1.5rem;
+      padding: 2.5rem 2.2rem;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.5);
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #c8a96e;
+      opacity: 0.85;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 7vw, 3.5rem);
+      font-weight: normal;
+      line-height: 1.05;
+      margin-bottom: 1.2rem;
+    }
+
+    h1 .ambas { color: #c8a96e; font-style: italic; }
+
+    .subtitulo {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: rgba(240,234,214,0.75);
+      margin-bottom: 2.2rem;
+    }
+
+    /* PROGRESO */
+    .progreso {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1.8rem;
+    }
+    .barra { display: flex; gap: 4px; flex: 1; }
+    .seg {
+      height: 4px;
+      flex: 1;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.15);
+      transition: background 0.3s;
+    }
+    .seg.pasado { background: #c8a96e; }
+    .seg.actual  { background: #fff; }
+    .prog-num { font-size: 0.8rem; color: #c8a96e; white-space: nowrap; }
+
+    /* PREGUNTA */
+    .pregunta-box {
+      background: rgba(200,169,110,0.08);
+      border: 1px solid rgba(200,169,110,0.2);
+      border-radius: 1rem;
+      padding: 1.6rem;
+      margin-bottom: 1.5rem;
+      min-height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pregunta-texto {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      line-height: 1.6;
+      font-style: italic;
+      text-align: center;
+      color: #f0ead6;
+    }
+
+    /* BOTONES */
+    .botones { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1rem; }
+
+    .btn-opcion {
+      background: rgba(255,255,255,0.06);
+      color: #f0ead6;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 0.7rem;
+      padding: 0.9rem 1.2rem;
+      font-size: 1.05rem;
+      font-family: 'Georgia', serif;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .btn-opcion:hover:not(:disabled) {
+      background: rgba(200,169,110,0.12);
+      border-color: rgba(200,169,110,0.4);
+      transform: translateX(3px);
+    }
+    .btn-opcion:disabled { cursor: default; }
+    .btn-opcion.correcto {
+      background: rgba(80,200,120,0.2);
+      border-color: rgba(80,200,120,0.6);
+      color: #a8f0c0;
+    }
+    .btn-opcion.incorrecto {
+      background: rgba(220,60,60,0.2);
+      border-color: rgba(220,60,60,0.5);
+      color: #f0a0a0;
+    }
+    .btn-opcion.opaco { opacity: 0.3; }
+
+    /* EXPLICACIÓN */
+    .explicacion {
+      background: rgba(200,169,110,0.1);
+      border: 1px solid rgba(200,169,110,0.3);
+      border-radius: 0.8rem;
+      padding: 1rem 1.2rem;
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: rgba(240,234,214,0.88);
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-top: 0.5rem;
+      animation: fadeIn 0.3s ease;
+    }
+    .explicacion .icono { font-size: 1.4rem; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+    .btn-siguiente {
+      align-self: flex-end;
+      background: transparent;
+      color: #c8a96e;
+      border: 1px solid #c8a96e;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1.3rem;
+      font-size: 0.95rem;
+      font-family: 'Georgia', serif;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-siguiente:hover { background: rgba(200,169,110,0.15); }
+
+    /* RESULTADO */
+    .puntaje {
+      font-size: 5.5rem;
+      color: #c8a96e;
+      line-height: 1;
+      margin-bottom: 0.2rem;
+    }
+    .puntaje span { font-size: 2.8rem; color: rgba(200,169,110,0.45); }
+    .msg-titulo {
+      font-size: 1.6rem;
+      font-weight: normal;
+      margin: 0.4rem 0 0.6rem;
+    }
+    .msg-sub {
+      font-size: 0.97rem;
+      line-height: 1.7;
+      color: rgba(240,234,214,0.75);
+      margin-bottom: 1.6rem;
+    }
+    .carreras {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      margin-bottom: 1.6rem;
+    }
+    .carrera {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(200,169,110,0.2);
+      border-radius: 0.8rem;
+      padding: 1rem;
+      font-size: 0.83rem;
+      line-height: 1.55;
+      color: rgba(240,234,214,0.8);
+    }
+    .carrera-icon { font-size: 2rem; color: #c8a96e; margin-bottom: 0.4rem; }
+    .carrera strong { display: block; margin-bottom: 0.3rem; color: #f0ead6; }
+
+    /* BTN PRIMARIO */
+    .btn-primario {
+      background: #c8a96e;
+      color: #1a1a2e;
+      border: none;
+      border-radius: 0.65rem;
+      padding: 0.9rem 2.2rem;
+      font-size: 1.05rem;
+      font-family: 'Georgia', serif;
+      font-weight: bold;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: transform 0.1s, filter 0.15s;
+    }
+    .btn-primario:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<div style="position:fixed;top:0;left:0;right:0;z-index:100;padding:0.8rem 1.4rem;display:flex;align-items:center;gap:0.9rem;background:rgba(15,20,45,0.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(200,169,110,0.2);">
+  <img src="data:image/jpeg;base64,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" alt="UCC" style="height:44px;border-radius:4px;" />
+  <div style="font-family:'Georgia',serif;font-size:0.72rem;letter-spacing:0.08em;color:rgba(240,234,214,0.8);line-height:1.55;text-transform:uppercase;">
+    Facultad de Filosofía y Humanidades<br>Facultad de Teología
+  </div>
+</div>
+<div style="height:72px;"></div>
+<div class="card">
+
+  <!-- INTRO -->
+  <div id="pantalla-intro">
+    <div class="tag">Jornada de Puertas Abiertas · FFyH · UCC</div>
+    <h1>¿Filosofía,<br>Teología<br><span class="ambas">o ambas?</span></h1>
+    <p class="subtitulo">
+      Te presentamos frases, preguntas y afirmaciones.<br>
+      Vos decidís a cuál campo pertenecen.<br>
+      <em>Spoiler: muchas veces te vas a sorprender.</em>
+    </p>
+    <button class="btn-primario" onclick="iniciar()">Empezar el juego →</button>
+  </div>
+
+  <!-- JUEGO -->
+  <div id="pantalla-juego" class="hidden">
+    <div class="progreso">
+      <div class="barra" id="barra"></div>
+      <span class="prog-num" id="prog-num"></span>
+    </div>
+    <div class="pregunta-box">
+      <p class="pregunta-texto" id="pregunta-texto"></p>
+    </div>
+    <div class="botones">
+      <button class="btn-opcion" id="btn-filo" onclick="elegir('filosofia')">Filosofía</button>
+      <button class="btn-opcion" id="btn-teo"  onclick="elegir('teologia')">Teología</button>
+      <button class="btn-opcion" id="btn-amb"  onclick="elegir('ambas')">¡Las dos!</button>
+    </div>
+    <div id="explicacion-box" class="explicacion hidden">
+      <span class="icono" id="exp-icono"></span>
+      <span id="exp-texto"></span>
+      <button class="btn-siguiente" id="btn-siguiente" onclick="siguiente()"></button>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="pantalla-resultado" class="hidden">
+    <div class="puntaje" id="puntaje-num"></div>
+    <h2 class="msg-titulo" id="msg-titulo"></h2>
+    <p class="msg-sub" id="msg-sub"></p>
+    <div class="carreras">
+      <div class="carrera">
+        <div class="carrera-icon">φ</div>
+        <strong>Licenciatura en Filosofía</strong>
+        4 años · Preguntas sobre el ser, el conocimiento, la ética y la lógica.
+      </div>
+      <div class="carrera">
+        <div class="carrera-icon">✝</div>
+        <strong>Licenciatura en Teología</strong>
+        5 años · Fe, razón, revelación y sentido desde la tradición cristiana.
+      </div>
+    </div>
+    <button class="btn-primario" onclick="iniciar()">Jugar de nuevo</button>
+  </div>
+
+</div>
+
+<script>
+  const TODAS = [
+    { texto: "¿Qué es la verdad?", respuesta: "ambas", explicacion: "Tanto Pilatos se la preguntó a Jesús como Platón la investigó en sus diálogos. La verdad es territorio compartido." },
+    { texto: "Todo lo que existe tiene una causa primera.", respuesta: "ambas", explicacion: "Aristóteles lo llamó "motor inmóvil" y Tomás de Aquino lo convirtió en una de sus Cinco Vías para demostrar la existencia de Dios." },
+    { texto: "La palabra es la casa del ser.", respuesta: "filosofia", explicacion: "Frase de Martin Heidegger. Para él, el lenguaje no es solo un instrumento: es el lugar donde el ser se revela. Una idea profundamente filosófica sobre el vínculo entre palabra y existencia." },
+    { texto: "Solo sé que no sé nada.", respuesta: "filosofia", explicacion: "Atribuida a Sócrates. Es el punto de partida de la actitud filosófica: la humildad intelectual que abre el camino al conocimiento." },
+    { texto: "El alma se conoce por sus actos.", respuesta: "ambas", explicacion: "Principio de Santo Tomás de Aquino. Así como conocemos el fuego por su calor, conocemos el alma por lo que hace. Una afirmación filosófica con profundas implicancias teológicas sobre la moral y la gracia." },
+    { texto: "El hombre es la medida de todas las cosas.", respuesta: "filosofia", explicacion: "Frase del sofista Protágoras. Es una afirmación de relativismo filosófico, casi opuesta a una visión centrada en Dios." },
+    { texto: "La gracia no destruye la naturaleza, sino que la perfecciona.", respuesta: "teologia", explicacion: "Principio de Tomás de Aquino sobre la relación entre fe y razón. Aunque tiene raíces filosóficas, es doctrina teológica." },
+    { texto: "Creo para entender, entiendo para creer.", respuesta: "ambas", explicacion: "Frase atribuida a San Agustín. Expresa la relación inseparable entre fe y razón: la fe busca comprender, y la comprensión profundiza la fe. Filosofía y teología en diálogo perfecto." },
+  ];
+
+  const TOTAL = 8;
+  let preguntas = [];
+  let actual = 0;
+  let aciertos = 0;
+  let elegida = null;
+
+  function shuffle(arr) {
+    return [...arr].sort(() => Math.random() - 0.5);
+  }
+
+  function mostrar(id) {
+    ['pantalla-intro','pantalla-juego','pantalla-resultado'].forEach(p => {
+      document.getElementById(p).classList.toggle('hidden', p !== id);
+    });
+  }
+
+  function iniciar() {
+    preguntas = [...TODAS];
+    actual = 0;
+    aciertos = 0;
+    elegida = null;
+    mostrar('pantalla-juego');
+    renderPregunta();
+  }
+
+  function renderPregunta() {
+    const p = preguntas[actual];
+    elegida = null;
+
+    // Progreso
+    const barra = document.getElementById('barra');
+    barra.innerHTML = '';
+    for (let i = 0; i < TOTAL; i++) {
+      const seg = document.createElement('div');
+      seg.className = 'seg' + (i < actual ? ' pasado' : i === actual ? ' actual' : '');
+      barra.appendChild(seg);
+    }
+    document.getElementById('prog-num').textContent = (actual+1) + ' / ' + TOTAL;
+
+    // Pregunta
+    document.getElementById('pregunta-texto').textContent = '"' + p.texto + '"';
+
+    // Botones
+    ['btn-filo','btn-teo','btn-amb'].forEach(id => {
+      const b = document.getElementById(id);
+      b.className = 'btn-opcion';
+      b.disabled = false;
+    });
+
+    // Ocultar explicación
+    document.getElementById('explicacion-box').classList.add('hidden');
+  }
+
+  function elegir(opcion) {
+    if (elegida) return;
+    elegida = opcion;
+
+    const p = preguntas[actual];
+    const correcto = opcion === p.respuesta;
+    if (correcto) aciertos++;
+
+    const mapa = { filosofia: 'btn-filo', teologia: 'btn-teo', ambas: 'btn-amb' };
+
+    ['filosofia','teologia','ambas'].forEach(op => {
+      const b = document.getElementById(mapa[op]);
+      b.disabled = true;
+      if (op === p.respuesta) b.classList.add('correcto');
+      else if (op === opcion)  b.classList.add('incorrecto');
+      else                     b.classList.add('opaco');
+    });
+
+    const box = document.getElementById('explicacion-box');
+    document.getElementById('exp-icono').textContent = correcto ? '✓ ¡Correcto!' : '✗ No exactamente…';
+    document.getElementById('exp-texto').textContent = p.explicacion;
+    document.getElementById('btn-siguiente').textContent = (actual + 1 >= TOTAL) ? 'Ver resultados' : 'Siguiente →';
+    box.classList.remove('hidden');
+  }
+
+  function siguiente() {
+    if (actual + 1 >= TOTAL) {
+      mostrarResultado();
+    } else {
+      actual++;
+      renderPregunta();
+    }
+  }
+
+  function mostrarResultado() {
+    mostrar('pantalla-resultado');
+    document.getElementById('puntaje-num').innerHTML = aciertos + '<span>/' + TOTAL + '</span>';
+
+    let titulo, sub;
+    if (aciertos === TOTAL) {
+      titulo = "¡Mente filosófico-teológica!";
+      sub = "Conocés el terreno donde estas dos disciplinas se encuentran y se desafían. Vas a estar en tu elemento en la FFyH.";
+    } else if (aciertos >= 6) {
+      titulo = "¡Muy buen ojo!";
+      sub = "Tenés intuición para distinguir —y también para ver— los puentes entre filosofía y teología.";
+    } else if (aciertos >= 4) {
+      titulo = "¡Buen comienzo!";
+      sub = "Ya empezás a notar que estas disciplinas se superponen más de lo que parecen. Eso es exactamente lo que estudiamos.";
+    } else {
+      titulo = "¡El juego recién empieza!";
+      sub = "Lo más sorprendente es que muchas respuestas son ambas. ¡Eso es lo que hace fascinante estudiar filosofía y teología!";
+    }
+
+    document.getElementById('msg-titulo').textContent = titulo;
+    document.getElementById('msg-sub').textContent = sub;
+  }
+</script>
+
+</body>
+</html>
